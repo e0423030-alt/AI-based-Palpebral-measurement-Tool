@@ -4,7 +4,7 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-# ====== CONSTANTS ======
+
 mp_face_mesh = mp.solutions.face_mesh
 
 LEFT_EYE = [159, 145]
@@ -19,7 +19,7 @@ TOLERANCE_MM = 0.3
 blink_count = 0
 prev_height = None
 
-# ====== FUNCTIONS ======
+
 def euclidean_dist(p1, p2, image_shape):
     h, w = image_shape[:2]
     x1, y1 = int(p1.x * w), int(p1.y * h)
@@ -98,11 +98,10 @@ def analyze_frame(image):
         if lh is None or rh is None:
             return image
 
-        # Swap labels (mirror fix)
         draw_annotations(image, "Right", lh, lt, lb, lir, lic, 40)
         draw_annotations(image, "Left", rh, rt, rb, rir, ric, 80)
 
-        # ====== PTOSIS DETECTION ======
+        #  PTOSIS DETECTION 
         left_status = "Normal"
         right_status = "Normal"
 
@@ -111,13 +110,13 @@ def analyze_frame(image):
         if rh < 8:
             right_status = "Ptosis"
 
-        # ====== ASYMMETRY ======
+        # ASYMMETRY 
         if abs(lh - rh) > 1:
             symmetry = "Asymmetry Detected"
         else:
             symmetry = "Symmetric"
 
-        # ====== STRABISMUS ======
+        # STRABISMUS 
         if lic and ric:
             if abs(lic[0] - ric[0]) > 20:
                 alignment = "Misalignment"
@@ -126,14 +125,14 @@ def analyze_frame(image):
         else:
             alignment = "Unknown"
 
-        # ====== BLINK DETECTION ======
+        # BLINK DETECTION 
         avg_height = (lh + rh) / 2
         if prev_height is not None:
             if avg_height < prev_height * 0.6:
                 blink_count += 1
         prev_height = avg_height
 
-        # ====== DISPLAY ======
+        # DISPLAY
         cv2.putText(image, f"Left Eye: {left_status}", (30, 120),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
@@ -151,7 +150,7 @@ def analyze_frame(image):
 
         return image
 
-# ====== IMAGE INPUT ======
+# IMAGE INPUT 
 def select_image():
     filepath = filedialog.askopenfilename(
         filetypes=[("Images", "*.jpg *.png *.jpeg")])
@@ -171,7 +170,7 @@ def select_image():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-# ====== WEBCAM ======
+#  WEBCAM 
 def start_webcam():
     cap = cv2.VideoCapture(0)
 
@@ -196,7 +195,7 @@ def start_webcam():
     cap.release()
     cv2.destroyAllWindows()
 
-# ====== GUI ======
+# GUI
 root = tk.Tk()
 root.title("Advanced Eye Analyzer")
 root.geometry("400x250")

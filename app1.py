@@ -4,14 +4,14 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-# PDF
+
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 # ML
 from sklearn.tree import DecisionTreeClassifier
 
-# ====== ML MODEL ======
+# ML MODEL
 X = [
     [10, 10, 0],
     [7, 10, 3],
@@ -22,7 +22,7 @@ y = ["Normal", "Ptosis", "Asymmetry"]
 model = DecisionTreeClassifier()
 model.fit(X, y)
 
-# ====== CONSTANTS ======
+#  CONSTANTS 
 mp_face_mesh = mp.solutions.face_mesh
 
 LEFT_EYE = [159, 145]
@@ -37,7 +37,6 @@ blink_count = 0
 prev_height = None
 heights_buffer = []
 
-# ====== PDF FUNCTION ======
 def generate_pdf(lh, rh, result):
     doc = SimpleDocTemplate("eye_report.pdf")
     styles = getSampleStyleSheet()
@@ -51,7 +50,7 @@ def generate_pdf(lh, rh, result):
 
     doc.build(content)
 
-# ====== CORE FUNCTIONS ======
+
 def euclidean_dist(p1, p2, shape):
     h, w = shape[:2]
     x1, y1 = int(p1.x * w), int(p1.y * h)
@@ -86,7 +85,7 @@ def palpebral_height(landmarks, eye, iris, shape):
     mm_per_px = IRIS_DIAMETER_MM / iris_px
     return h_px * mm_per_px, t_px, b_px, iris_pts, iris_center
 
-# ====== MAIN ANALYSIS ======
+
 def analyze_frame(img):
     global blink_count, prev_height, heights_buffer
 
@@ -113,23 +112,23 @@ def analyze_frame(img):
         lh = np.mean([h[0] for h in heights_buffer])
         rh = np.mean([h[1] for h in heights_buffer])
 
-        # ====== ML PREDICTION ======
+        #  ML PREDICTION 
         result = model.predict([[lh, rh, abs(lh-rh)]])[0]
 
-        # ====== BLINK ======
+        # BLINK 
         avg = (lh + rh) / 2
         if prev_height and avg < prev_height * 0.6:
             blink_count += 1
         prev_height = avg
 
-        # ====== AUTO CAPTURE ======
+        # AUTO CAPTURE 
         if abs(lh - rh) < 1:
             cv2.putText(img, "Auto Capture!", (200, 50),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
             cv2.imwrite("captured.png", img)
             generate_pdf(lh, rh, result)
 
-        # ====== DISPLAY ======
+        #DISPLAY
         cv2.putText(img, f"L: {lh:.2f} mm", (30, 40), 0, 0.7, (0,255,255), 2)
         cv2.putText(img, f"R: {rh:.2f} mm", (30, 70), 0, 0.7, (0,255,255), 2)
 
@@ -141,7 +140,7 @@ def analyze_frame(img):
 
         return img
 
-# ====== IMAGE ======
+#  IMAGE 
 def select_image():
     path = filedialog.askopenfilename()
     img = cv2.imread(path)
@@ -153,7 +152,7 @@ def select_image():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# ====== WEBCAM ======
+#WEBCAM 
 def webcam_mode():
     cap = cv2.VideoCapture(0)
 
@@ -171,7 +170,7 @@ def webcam_mode():
     cap.release()
     cv2.destroyAllWindows()
 
-# ====== BLINK MODE ======
+# BLINK MODE
 def blink_mode():
     global blink_count
     blink_count = 0
@@ -195,7 +194,7 @@ def blink_mode():
     cap.release()
     cv2.destroyAllWindows()
 
-# ====== GUI ======
+
 root = tk.Tk()
 root.title("AI Eye Analyzer")
 root.geometry("400x300")

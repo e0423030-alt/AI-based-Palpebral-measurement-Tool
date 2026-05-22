@@ -4,7 +4,7 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-# ====== CONSTANTS ======
+
 mp_face_mesh = mp.solutions.face_mesh
 
 LEFT_EYE = [159, 145]
@@ -16,7 +16,7 @@ RIGHT_IRIS = [469, 470, 471, 472]
 IRIS_DIAMETER_MM = 11.7
 TOLERANCE_MM = 0.3
 
-# ====== FUNCTIONS ======
+
 def euclidean_dist(p1, p2, image_shape):
     h, w = image_shape[:2]
     x1, y1 = int(p1.x * w), int(p1.y * h)
@@ -94,7 +94,7 @@ def analyze_frame(image):
         if lh is None or rh is None:
             return image
 
-        # 🔥 IMPORTANT FIX: Swap labels (because of flip)
+        
         draw_annotations(image, "Right", lh, lt, lb, lir, lic, 40)
         draw_annotations(image, "Left", rh, rt, rb, rir, ric, 80)
 
@@ -114,7 +114,7 @@ def analyze_frame(image):
 
         return image
 
-# ====== IMAGE INPUT ======
+
 def select_image():
     filepath = filedialog.askopenfilename(
         filetypes=[("Images", "*.jpg *.png *.jpeg")])
@@ -135,7 +135,7 @@ def select_image():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-# ====== WEBCAM ======
+
 def start_webcam():
     cap = cv2.VideoCapture(0)
 
@@ -148,20 +148,20 @@ def start_webcam():
         if not ret:
             break
 
-        # Mirror view
+        
         frame = cv2.flip(frame, 1)
 
         result = analyze_frame(frame)
 
         cv2.imshow("Live Eye Analyzer", result)
 
-        if cv2.waitKey(1) & 0xFF == 27:  # ESC
+        if cv2.waitKey(1) & 0xFF == 27:  
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
-# ====== GUI ======
+
 root = tk.Tk()
 root.title("Eye Palpebral Height Analyzer")
 root.geometry("400x220")

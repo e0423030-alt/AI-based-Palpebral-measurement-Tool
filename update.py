@@ -4,7 +4,7 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-# ====== CONSTANTS ======
+
 mp_face_mesh = mp.solutions.face_mesh
 
 LEFT_EYE = [159, 145]
@@ -16,7 +16,7 @@ RIGHT_IRIS = [469, 470, 471, 472]
 IRIS_DIAMETER_MM = 11.7
 TOLERANCE_MM = 0.3
 
-# ====== FUNCTIONS ======
+
 def euclidean_dist(p1, p2, image_shape):
     h, w = image_shape[:2]
     x1, y1 = int(p1.x * w), int(p1.y * h)
@@ -113,7 +113,7 @@ def analyze_frame(image):
 
         return image
 
-# ====== IMAGE INPUT ======
+
 def select_image():
     filepath = filedialog.askopenfilename(
         filetypes=[("Images", "*.jpg *.png *.jpeg")])
@@ -125,7 +125,7 @@ def select_image():
             messagebox.showerror("Error", "Cannot load image")
             return
 
-        # ✅ Flip for mirror consistency
+        # Flip for mirror 
         image = cv2.flip(image, 1)
 
         result = analyze_frame(image)
@@ -134,7 +134,7 @@ def select_image():
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-# ====== WEBCAM ======
+# WEBCAM 
 def start_webcam():
     cap = cv2.VideoCapture(0)
 
@@ -147,20 +147,20 @@ def start_webcam():
         if not ret:
             break
 
-        # ✅ Flip webcam also
+        
         frame = cv2.flip(frame, 1)
 
         result = analyze_frame(frame)
 
         cv2.imshow("Live Eye Analyzer", result)
 
-        if cv2.waitKey(1) & 0xFF == 27:  # ESC to exit
+        if cv2.waitKey(1) & 0xFF == 27:  
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
-# ====== GUI ======
+
 root = tk.Tk()
 root.title("Eye Palpebral Height Analyzer")
 root.geometry("400x200")
